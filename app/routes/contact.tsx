@@ -28,22 +28,26 @@ type ActionData = {
 
 // Validation des données du formulaire
 const validateName = (name: string) => {
-  if (name.length < 2) {
+  if (!name || name.length < 2) {
     return "Le nom doit comporter au moins 2 caractères";
   }
+  return undefined;
 };
 
 const validateEmail = (email: string) => {
+  if (!email) return "L'email est requis";
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     return "Veuillez entrer une adresse email valide";
   }
+  return undefined;
 };
 
 const validateMessage = (message: string) => {
-  if (message.length < 10) {
+  if (!message || message.length < 10) {
     return "Le message doit comporter au moins 10 caractères";
   }
+  return undefined;
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -52,6 +56,8 @@ export const action: ActionFunction = async ({ request }) => {
   const email = formData.get("email") as string;
   const message = formData.get("message") as string;
 
+  console.log("Données reçues:", { name, email, message });
+
   const fields = { name, email, message };
   const fieldErrors = {
     name: validateName(name),
@@ -59,21 +65,26 @@ export const action: ActionFunction = async ({ request }) => {
     message: validateMessage(message),
   };
 
+  // Vérifier s'il y a des erreurs de validation
   if (Object.values(fieldErrors).some(Boolean)) {
+    console.log("Erreurs de validation:", fieldErrors);
     return json({ fieldErrors, fields }, { status: 400 });
   }
 
   try {
-    await submitContactForm({ name, email, message });
-    return json({ success: true });
-  } catch (error) {
+    console.log("Tentative d'envoi du message...");
+    const result = await submitContactForm({ name, email, message });
+    console.log("Message envoyé avec succès:", result);
+    return json({ success: true, fields });
+  } catch (error: any) {
     console.error("Erreur lors de l'envoi du formulaire:", error);
     return json(
-      { 
-        formError: "Une erreur s'est produite lors de l'envoi du message. Veuillez réessayer plus tard.",
-        fields 
+      {
+        formError: error.response?.data?.error?.message || 
+                  "Une erreur s'est produite lors de l'envoi du message. Veuillez réessayer plus tard.",
+        fields
       },
-      { status: 500 }
+      { status: error.response?.status || 500 }
     );
   }
 };

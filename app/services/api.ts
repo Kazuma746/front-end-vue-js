@@ -2,14 +2,14 @@ import axios from 'axios';
 
 const API_URL = 'http://127.0.0.1:1337/api';
 
-// Utiliser la variable d'environnement API_TOKEN
-const API_TOKEN = process.env.API_TOKEN || '';
+// Utiliser la variable d'environnement STRAPI_API_TOKEN
+const API_TOKEN = process.env.STRAPI_API_TOKEN;
 
 const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${API_TOKEN}`,
+    ...(API_TOKEN ? { 'Authorization': `Bearer ${API_TOKEN}` } : {}),
   },
 });
 
@@ -24,8 +24,23 @@ export const getPost = async (id: string) => {
 };
 
 export const submitContactForm = async (data: { name: string; email: string; message: string }) => {
-  const response = await api.post('/messages', { data });
-  return response.data;
+  try {
+    // Structurer les données selon le format attendu par Strapi
+    const formattedData = {
+      data: {
+        name: data.name,
+        email: data.email,
+        message_email: data.message // Assurez-vous que ce champ correspond au nom dans Strapi
+      }
+    };
+    
+    console.log('Données envoyées à Strapi:', formattedData);
+    const response = await api.post('/messages', formattedData);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de l\'envoi du message:', error);
+    throw error;
+  }
 };
 
 // Fonctions d'authentification

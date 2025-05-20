@@ -90,7 +90,7 @@ export default function Index() {
                         post.content
                           .replace(/<[^>]*>/g, '')
                           .slice(0, 120)}
-                      {post.attributes?.Content && post.attributes.Content.length > 120 ? '...' : ''}
+                      {post.Content && post.Content.length > 120 ? '...' : ''}
                     </div>
                     <div className="flex justify-between items-center mt-auto">
                       <p className="text-gray-500 text-sm">
