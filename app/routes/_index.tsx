@@ -7,8 +7,8 @@ import * as React from "react";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "BlogIt - Accueil" },
-    { name: "description", content: "Bienvenue sur BlogIt!" },
+    { Title: "BlogIt - Accueil" },
+    { name: "description", Content: "Bienvenue sur BlogIt!" },
   ];
 };
 
@@ -25,6 +25,7 @@ export const loader: LoaderFunction = async () => {
 export default function Index() {
   const { posts } = useLoaderData<{ posts: StrapiResponse<Post> }>();
   const recentPosts = posts.data.slice(0, 6);
+  console.log(recentPosts); 
 
   return (
     <div className="flex flex-col gap-0">
@@ -69,31 +70,31 @@ export default function Index() {
           
           {recentPosts.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {recentPosts.map((post) => (
+              {recentPosts?.map((post) => (
                 <div 
                   key={post.id} 
                   className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition flex flex-col"
                 >
                   <div className="p-6 flex flex-col flex-grow">
-                    {post.attributes.category && typeof post.attributes.category === 'string' && (
+                    {post.category && (
                       <span className="bg-[#BCF4DE] px-3 py-1 rounded-full text-sm font-medium text-gray-700 inline-block mb-3 w-fit">
-                        {post.attributes.category}
+                        {post.category}
                       </span>
                     )}
                     <h3 className="text-xl font-bold mb-3 text-gray-800">
-                      {post.attributes.title}
+                      {post.Title}
                     </h3>
                     <div className="text-gray-600 mb-4 flex-grow">
                       {/* Afficher un aperçu du contenu (enlever les balises HTML et limiter) */}
-                      {post.attributes.content && 
-                        post.attributes.content
+                      {post.content && 
+                        post.content
                           .replace(/<[^>]*>/g, '')
                           .slice(0, 120)}
-                      {post.attributes.content && post.attributes.content.length > 120 ? '...' : ''}
+                      {post.attributes?.Content && post.attributes.Content.length > 120 ? '...' : ''}
                     </div>
                     <div className="flex justify-between items-center mt-auto">
                       <p className="text-gray-500 text-sm">
-                        {new Date(post.attributes.postedAt).toLocaleDateString('fr-FR')}
+                        {new Date(post.PostedAt).toLocaleDateString('fr-FR')}
                       </p>
                       <Link 
                         to={`/posts/${post.id}`}

@@ -21,13 +21,13 @@ export interface SingleStrapiResponse<T> {
 }
 
 export interface Post {
-  title: string;
-  content: string;
-  postedAt: string;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
-  category?: string;
+  Title: string;
+  Content: string;
+  PostedAt: string;
+  CreatedAt: string;
+  UpdatedAt: string;
+  PublishedAt: string;
+  Category: string;
 }
 
 export interface ContactMessage {
